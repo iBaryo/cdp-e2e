@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2020",
+    "sourceMap": false,
+    "types": ["cypress"]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
