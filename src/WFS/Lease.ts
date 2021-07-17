@@ -7,6 +7,8 @@ interface LeaseManager {
     release(leaseId: string): Promise<void>;
 }
 
+export type LeaseBusinessUnit = Lease['businessUnit'];
+
 export class Lease {
     private readonly _sdk: CDP;
     private _isReleased = false;
@@ -26,6 +28,10 @@ export class Lease {
             return new Proxy(sdkOps[prop], this.sdkOpsProxyHandler);
         }
     };
+
+    public get loginCredentials() {
+        return this.wsLease.Credentials.userKeys.Universe.properties;
+    }
 
     public get businessUnit() {
         return new Proxy(
