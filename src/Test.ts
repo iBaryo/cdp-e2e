@@ -13,7 +13,7 @@ export interface AAATest<P extends Page> extends ArrangeTest {
     assert: (page: P, bUnit: LeaseBusinessUnit) => Promise<void>;
 }
 
-type TestFn<P extends RootPage> = (title: string, options: AAATest<P>) => void;
+type TestFn<P extends RootPage> = (title: string, aaaTest: AAATest<P>) => void;
 
 export function cdpSuite<P extends Page>(
     name: string,
