@@ -1,10 +1,10 @@
-import {RootPage} from "./Page";
+import {RootPage, RootRoute} from "./RootPage";
 
 export class LoginPage extends RootPage {
 
-    public static get route() {
+    public static get route(): RootRoute<LoginPage> {
         return {
-            menuItemSelector: null, // need to logout
+            menuItemSelector: '', // need to logout
             path: '',
             pageClass: this
         };
