@@ -15,22 +15,29 @@ export interface AAATest<P extends Page> extends ArrangeTest {
 
 type TestFn<P extends RootPage> = (title: string, aaaTest: AAATest<P>) => void;
 
+// TODO: tags for run
+
 export function cdpSuite<P extends Page>(
     name: string,
-    TestPage: { route: RootRoute<P> },
-    options: Partial<ArrangeTest & {wfsOptions: WFSOptions}>,
+    TestPage: (new() => P) & { route: RootRoute<P> },
+    options: Partial<ArrangeTest & {wfsOptions: WFSOptions}>, // TODO: roles
     fn: (it: TestFn<P>) => void) {
+
     const wfs = new WFS(
         new CDP(require('../creds.json'), {
+            sendRequest: async <T>(req, reqOptions) => {
+                // TODO: cy.request
+                return null;
+            },
             verboseLog: true,
             log(msg: string, ...args) {
-
+                // TODO: logs?
             }
         }),
         options.wfsOptions
     );
 
-    const page = new TestPage.route.pageClass();
+    const page = new TestPage.route.pageClass(); // TODO: proxy to enable access only before lease timeout
     const rootPath = TestPage.route.path;
 
     return describe(name, {}, function () { // keep as function to preserve context
@@ -43,7 +50,7 @@ export function cdpSuite<P extends Page>(
         });
 
         this.beforeEach(`arrange and reset to root page: ${rootPath}`, async () => {
-            if (lease.isReleased) {
+            if (lease.isReleased) { // to prevent releasing after the initial one (required for login)
                 lease = await wfs.lease();
             }
             await options.arrange?.(lease.businessUnit);
@@ -58,12 +65,12 @@ export function cdpSuite<P extends Page>(
             // TODO
         });
 
-        fn(function test(title: string, options: AAATest<P>) {
+        fn(function test(title: string, aaaTest: AAATest<P>) {
             it(title, async function() { // keep as function to preserve context
                 const bUnit = lease.businessUnit;
-                await options.arrange?.(bUnit);
-                await options.act(page, bUnit);
-                await options.assert(page, bUnit);
+                await aaaTest.arrange?.(bUnit);
+                await aaaTest.act(page, bUnit);
+                await aaaTest.assert(page, bUnit);
             });
         });
     });

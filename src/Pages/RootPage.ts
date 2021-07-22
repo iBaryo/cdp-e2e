@@ -2,8 +2,8 @@ import {Page, select} from "./Page";
 
 export interface RootRoute<T extends RootPage> { // "root route" is when we use the side-menu in order to navigate to a "root page"
     readonly menuItemSelector: string;
-    readonly pageClass: new () => T;
     readonly path: string;
+    readonly pageClass: new () => T;
 }
 
 export abstract class RootPage extends Page { // root pages are also pages (can navigate to other pages)

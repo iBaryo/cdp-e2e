@@ -1,5 +1,6 @@
 import {RootPage} from "../RootPage";
-import {ActivityIndicatorPage, select} from "../Page";
+import {select} from "../Page";
+import {ActivityIndicatorPage} from "./ActivityIndicatorPage";
 
 export class ActivityIndicatorsListPage extends RootPage {
 
