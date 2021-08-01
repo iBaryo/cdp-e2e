@@ -39,6 +39,12 @@ export class Lease {
             this.sdkOpsProxyHandler);
     }
 
+    public get connectors() {
+        return new Proxy(
+            this._sdk.api.workspaces.for(this.wsLease.Info.workspaceId).applibrary,
+            this.sdkOpsProxyHandler);
+    }
+
     public get id() {
         return this.wsLease.id;
     }

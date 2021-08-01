@@ -27,6 +27,7 @@ export function cdpSuite<P extends Page>(
         new CDP(require('../creds.json'), {
             sendRequest: async <T>(req, reqOptions) => {
                 // TODO: cy.request
+                // TODO: X-Gigya-Test-LeaseId header
                 return null;
             },
             verboseLog: true,
