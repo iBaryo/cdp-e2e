@@ -1,5 +1,5 @@
-import {BusinessUnitId, WorkspaceId} from "../sdk/entities";
-import {SecretCredentials} from "../sdk/Signers/SimpleRequestSigner";
+import {BusinessUnitId, WorkspaceId} from "../SDK/entities";
+import {SecretCredentials} from "../SDK/Signers/SimpleRequestSigner";
 import {WorkspaceLease} from "./WorkspaceLease";
 
 export interface LeaseInfo {

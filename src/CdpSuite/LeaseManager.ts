@@ -1,7 +1,7 @@
 import {LeaseInfo} from "../WFS/LeaseInfo";
 import {TestBusinessUnitManager, WFS, WFSOptions} from "../WFS";
-import {CredentialsType} from "../sdk/Signers";
-import {CDP} from "../sdk";
+import {CredentialsType} from "../SDK/Signers";
+import {CDP} from "../SDK";
 import {IWFS} from "../WFS/WFS";
 
 type SingleLease = { singleLease: true | LeaseInfo };

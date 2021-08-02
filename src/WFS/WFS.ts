@@ -1,4 +1,4 @@
-import {CDP, PermissionsGroup} from "../sdk";
+import {CDP, PermissionsGroup} from "../SDK";
 import {WorkspaceLease} from "./WorkspaceLease";
 import {Lease, LeaseManager} from "./Lease";
 

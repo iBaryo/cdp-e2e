@@ -1,4 +1,4 @@
-import {CDP} from "../sdk";
+import {CDP} from "../SDK";
 import {WFSLeaseInfo} from "./LeaseInfo";
 
 export interface LeaseManager {
