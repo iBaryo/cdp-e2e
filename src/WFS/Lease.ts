@@ -16,30 +16,32 @@ export class Lease {
         this._sdk = new CDP(leaseInfo.apiCredentials);
     }
 
-    private readonly sdkOpsProxyHandler = {
+    private readonly accessProxyHandler = {
         get: (sdkOps, prop) => { // important to keep as an arrow function!
             if (this.isExpired()) {
                 this.release(); // fire and forget
                 throw `couldn't access "${prop}" because lease expired (lease id: ${this.id})`;
             }
-            return new Proxy(sdkOps[prop], this.sdkOpsProxyHandler);
+            return new Proxy(sdkOps[prop], this.accessProxyHandler);
         }
     };
+
+    public allowAccessUntilExpire<T extends object>(target: T): T {
+        return new Proxy(target, this.accessProxyHandler);
+    }
 
     public get loginCredentials() {
         return this.leaseInfo.loginCredentials;
     }
 
     public get businessUnit() {
-        return new Proxy(
-            this._sdk.api.businessunits.for(this.leaseInfo.bUnitId),
-            this.sdkOpsProxyHandler);
+        return this.allowAccessUntilExpire(
+            this._sdk.api.businessunits.for(this.leaseInfo.bUnitId));
     }
 
     public get connectors() {
-        return new Proxy(
-            this._sdk.api.workspaces.for(this.leaseInfo.workspaceId).applibrary,
-            this.sdkOpsProxyHandler);
+        return this.allowAccessUntilExpire(
+            this._sdk.api.workspaces.for(this.leaseInfo.workspaceId).applibrary);
     }
 
     public get id() {

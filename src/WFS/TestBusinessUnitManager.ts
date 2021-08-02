@@ -10,6 +10,7 @@ export class TestBusinessUnitManager implements IWFS {
     }
 
     public async clean(): Promise<void> {
+        // implementation is injected
     }
 
     public async lease(): Promise<Lease> {
@@ -20,6 +21,7 @@ export class TestBusinessUnitManager implements IWFS {
         }, this);
     }
 
-    public async release(): Promise<void> {
+    public release(): Promise<void> {
+        return this.clean();
     }
 }
