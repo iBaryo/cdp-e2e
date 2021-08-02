@@ -1,3 +1,6 @@
+/*
+as returned from WFS endpoint
+ */
 export interface WorkspaceLease {
     Credentials: {
         partnerIds: {

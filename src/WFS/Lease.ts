@@ -1,8 +1,7 @@
-import {WorkspaceLease} from "./WorkspaceLease";
 import {CDP} from "../sdk";
-import {DurationUnit} from "./LeaseDuration";
+import {WFSLeaseInfo} from "./LeaseInfo";
 
-interface LeaseManager {
+export interface LeaseManager {
     clean(leaseId: string): Promise<void>;
     release(leaseId: string): Promise<void>;
 }
@@ -13,10 +12,8 @@ export class Lease {
     private readonly _sdk: CDP;
     private _isReleased = false;
 
-    constructor(private wsLease: WorkspaceLease, private leaseManager: LeaseManager) {
-        const creds = wsLease.Credentials.userKeys.Universe;
-        this._sdk = new CDP({userKey: creds.userKey, secret: creds.userSecret});
-
+    constructor(private leaseInfo: WFSLeaseInfo, private leaseManager: LeaseManager) {
+        this._sdk = new CDP(leaseInfo.apiCredentials);
     }
 
     private readonly sdkOpsProxyHandler = {
@@ -30,27 +27,27 @@ export class Lease {
     };
 
     public get loginCredentials() {
-        return this.wsLease.Credentials.userKeys.Universe.properties;
+        return this.leaseInfo.loginCredentials;
     }
 
     public get businessUnit() {
         return new Proxy(
-            this._sdk.api.businessunits.for(this.wsLease.Info.businessUnitId),
+            this._sdk.api.businessunits.for(this.leaseInfo.bUnitId),
             this.sdkOpsProxyHandler);
     }
 
     public get connectors() {
         return new Proxy(
-            this._sdk.api.workspaces.for(this.wsLease.Info.workspaceId).applibrary,
+            this._sdk.api.workspaces.for(this.leaseInfo.workspaceId).applibrary,
             this.sdkOpsProxyHandler);
     }
 
     public get id() {
-        return this.wsLease.id;
+        return this.leaseInfo.id;
     }
 
     public get created() {
-        return new Date(this.wsLease.Info.created);
+        return this.leaseInfo.created;
     }
 
     public get isReleased() {
@@ -58,10 +55,13 @@ export class Lease {
     }
 
     public get duration() {
-        return parseInt(this.wsLease.Info.duration.replace(DurationUnit, ''));
+        return this.leaseInfo.duration;
     }
 
     public isExpired() {
+        if (!this.duration)
+            return false;
+
         return (this.created.getTime() + this.duration) < Date.now();
     }
 
