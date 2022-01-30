@@ -3,6 +3,7 @@ import {TestBusinessUnitManager, WFS, WFSOptions} from "../WFS";
 import {CredentialsType} from "../SDK/Signers";
 import {CDP} from "../SDK";
 import {IWFS} from "../WFS/WFS";
+import promisify from "cypress-promise";
 
 type SingleLease = { singleLease: true | LeaseInfo };
 type WFSLease = { wfsOptions: WFSOptions };
@@ -28,9 +29,26 @@ export function createLeaseManager(options: Partial<LeaseManagerOptions>): IWFS 
         return new WFS(
             new CDP(wfsCreds, {
                 sendRequest: async <T>(req, reqOptions) => {
-                    // TODO: cy.request
-                    // TODO: X-Gigya-Test-LeaseId header
-                    return null;
+                    return promisify(cy.request({
+                        method: req.method,
+                        url: req.uri,
+                        headers: {
+                            ...req.headers,
+                            [`Content-type`]: `application/json`,
+                            [`X-Gigya-Test-Name`]: `UNIVERSE-E2E`,
+                            // [`X-Gigya-Test-LeaseId`]: ``
+                        },
+                        body: req.body,
+                        // timeout: 40000,
+                        // retryOnNetworkFailure: true,
+                        // retryOnStatusCodeFailure: true,
+                        gzip: true,
+                        log: true,
+                        // failOnStatusCode: true
+                        // followRedirect: false
+                    })).then(res => {
+                        return res.body as T;
+                    });
                 },
                 verboseLog: true,
                 // log(msg: string, ...args) {
@@ -43,11 +61,16 @@ export function createLeaseManager(options: Partial<LeaseManagerOptions>): IWFS 
 }
 
 function getWFSCreds() {
-    const yargs = require('yargs/yargs')
+    let yargs: { argv: any };
+    try {
+        yargs = require('yargs/yargs');
+    } catch (e) {
+        console.log('no cli args');
+    }
 
     try {
-        const {userKey, secret} = yargs.argv;
-        const wfsCreds: CredentialsType = userKey && secret ? {userKey, secret} : require('../wfsCreds.json');
+        const {userKey, secret} = yargs?.argv ?? {};
+        const wfsCreds: CredentialsType = userKey && secret ? {userKey, secret} : require('../../wfsCreds.json');
         return wfsCreds;
     } catch (e) {
         console.error(e);

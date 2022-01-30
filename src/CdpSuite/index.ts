@@ -3,6 +3,7 @@ import {Page} from "../Pages/Page";
 import {LoginPage} from "../Pages/LoginPage";
 import {RootPage, RootRoute} from "../Pages/RootPage";
 import {createLeaseManager, LeaseManagerOptions} from "./LeaseManager";
+import promisify from "cypress-promise";
 
 export interface ArrangeTest {
     arrange?: (bUnit: LeaseBusinessUnit) => Promise<void>;
@@ -31,7 +32,7 @@ export function cdpSuite<P extends Page>(
 
         this.beforeAll('lease and login', async () => {
             lease = await leaseManager.lease();
-            cy.visit(`https://universe.cdp.gigya.com`); // TODO: env specific
+            await promisify(cy.visit(`https://universe.cdp.gigya.com`)); /// TODO: env specific
             RootPage.navigateTo(LoginPage.route).login(lease.loginCredentials, rootPath);
         });
 

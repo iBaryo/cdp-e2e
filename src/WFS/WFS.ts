@@ -53,12 +53,13 @@ export class WFS implements IWFS {
         clearTimeout(this._activeLeases[leaseId]);
     }
 
-    public async directLease(options?: Partial<LeaseOptions>) {
+    private async directLease(options?: Partial<LeaseOptions>) {
         const leaseOptions = Object.assign({}, this.DefaultLeaseOptions, options);
         const wsLease =
             await this.sdk.get<WorkspaceLease>(`wf2/workspace/lease`, {
                 ...leaseOptions,
-                duration: `${DurationSecUnit}${leaseOptions.duration}` // backend required transformation
+                // duration: `${DurationSecUnit}${leaseOptions.duration}` // backend required transformation
+                duration: undefined
             })
 
         this._activeLeases[wsLease.id] = setTimeout(() => {
@@ -77,7 +78,7 @@ export class WFS implements IWFS {
             created: new Date(wsLease.Info.created),
             workspaceId: wsLease.Info.workspaceId,
             bUnitId: wsLease.Info.businessUnitId,
-            duration: parseInt(wsLease.Info.duration.replace(DurationSecUnit, '')) * 1000,
+            duration: parseInt(wsLease.Info.duration?.replace(DurationSecUnit, '')) * 1000 ?? 10000,
             loginCredentials: wsLease.Credentials.userKeys.Universe.properties,
             apiCredentials: {
                 userKey: wsLease.Credentials.userKeys.Universe.userKey,
