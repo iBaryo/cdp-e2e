@@ -1,13 +1,17 @@
-import {RootPage} from "../RootPage";
+import {RootPage, UniversePath} from "../RootPage";
 import {select} from "../Page";
 import {ActivityIndicatorPage} from "./ActivityIndicatorPage";
+import {BusinessUnitInfo} from "../../WFS/LeaseInfo";
 
-export class ActivityIndicatorsListPage extends RootPage {
-
+export class IndicatorsListPage extends RootPage {
     public static get route() {
         return {
             menuItemSelector: select('activity-indicators-app'),
-            path: '',
+            path: {
+                for(ctx: BusinessUnitInfo): UniversePath {
+                    return `/tenant/${ctx.tenantId}/workspace/${ctx.workspaceId}/business-unit/${ctx.bUnitId}/customers/indicators`;
+                }
+            },
             pageClass: this
         };
     }

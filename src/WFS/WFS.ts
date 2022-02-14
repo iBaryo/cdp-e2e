@@ -76,6 +76,7 @@ export class WFS implements IWFS {
         return new Lease({
             id: wsLease.id,
             created: new Date(wsLease.Info.created),
+            tenantId: wsLease.Info.tenantId,
             workspaceId: wsLease.Info.workspaceId,
             bUnitId: wsLease.Info.businessUnitId,
             duration: parseInt(wsLease.Info.duration?.replace(DurationSecUnit, '')) * 1000 ?? 10000,

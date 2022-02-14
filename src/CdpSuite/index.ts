@@ -7,6 +7,7 @@ import promisify from "cypress-promise";
 
 export interface ArrangeTest {
     arrange?: (bUnit: LeaseBusinessUnit) => Promise<void>;
+    cleanup?: (bUnit: LeaseBusinessUnit) => Promise<void>;
 }
 
 export interface AAATest<P extends Page> extends ArrangeTest {
@@ -33,7 +34,13 @@ export function cdpSuite<P extends Page>(
         this.beforeAll('lease and login', async () => {
             lease = await leaseManager.lease();
             await promisify(cy.visit(`https://universe.cdp.gigya.com`)); /// TODO: env specific
-            RootPage.navigateTo(LoginPage.route).login(lease.loginCredentials, rootPath);
+
+            const loginPage = await RootPage.navigateTo({
+                pageClass: LoginPage.route.pageClass,
+                path: LoginPage.route.path.for(lease.businessUnitInfo) // TODO: can we cleanup the use of path and the leased bUnit?
+            });
+
+            await loginPage.login(lease.loginCredentials, rootPath.for(lease.businessUnitInfo));
         });
 
         this.beforeEach(`arrange and reset to root page: ${rootPath}`, async () => {
@@ -41,15 +48,18 @@ export function cdpSuite<P extends Page>(
                 lease = await leaseManager.lease();
             }
             await options.arrange?.(lease.businessUnit);
-            cy.visit(rootPath);
+
+            await promisify(cy.visit(`/#${rootPath.for(lease.businessUnitInfo)}`));
         });
 
-        this.afterEach(`release lease`, async () => {
+        this.afterEach(`cleanup`, async () => {
+            await options.cleanup?.(lease.businessUnit);
+        });
+
+        this.afterAll('lease release & flush logs of failed tests', async () => {
             await lease.release();
-        });
-
-        this.afterAll('flush logs of failed tests', async () => {
-            // TODO
+            // await promisify(cy.visit('about:blank'));
+            // TODO flush logs
         });
 
         fn(function test(title: string, aaaTest: AAATest<P>) {

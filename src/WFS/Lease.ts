@@ -1,5 +1,5 @@
 import {CDP} from "../SDK";
-import {WFSLeaseInfo} from "./LeaseInfo";
+import {BusinessUnitInfo, WFSLeaseInfo} from "./LeaseInfo";
 
 export interface LeaseManager {
     clean(leaseId: string): Promise<void>;
@@ -32,6 +32,10 @@ export class Lease {
 
     public get loginCredentials() {
         return this.leaseInfo.loginCredentials;
+    }
+
+    public get businessUnitInfo() {
+        return this.leaseInfo as BusinessUnitInfo;
     }
 
     public get businessUnit() {

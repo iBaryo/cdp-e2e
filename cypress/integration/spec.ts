@@ -1,5 +1,5 @@
 import {cdpSuite} from "../../src/CdpSuite";
-import {ActivityIndicatorsListPage} from "../../src/Pages/ActivityIndicators/ActivityIndicatorsListPage";
+import {IndicatorsListPage} from "../../src/Pages/Indicators/IndicatorsListPage";
 import cypress = require("cypress");
 import promisify from "cypress-promise";
 
